@@ -1,0 +1,239 @@
+# REQUIRES GMAKE!!!!
+#
+# wgrib2 uses components of varying copyrights and licences.  See wgrib2/LICENSE-wgrib2
+#
+# makefile for wgrib2
+# 
+# compiles every #@?! library needed by wgrib2
+# then tries to compile wgrib2
+#
+# (1) must use gnu-make
+# (2) the environment veriable CC must be set to the C compiler
+# (3) the environment variable FC must be set to fortran-90 compiler or 
+#        higher in order to compile the optional netcdf, the optional IPOLATES
+#        and fortran API. Not needed if netcdf and IPOLATES and fortran API are not used
+#
+#
+# mod 1/07 M. Schwarb (libgrib2c name change)
+# mod 4/09 W. Ebisuzaki (use config.h)
+# mod 6/10 W. Ebisuzaki ipolates
+# mod 8/11 W. Ebisuzaki support environment variable FC={fortran 90+ compiler}
+#              needed by optional netcdf4 and ipolates
+# mod 3/12 W. Ebisuzaki support openmp, gctpc
+# mod 8/12 M. Schwarb  gunzip -n -f,  cd "$var"
+# mod 10/12 W. Ebisuzaki
+# mod 7/13 W. Ebisuzaki added got netcdf4 working again, added subdirectroy lib, bin, include, man
+# mod 11/14 W. Ebisuzaki added target lib, make callable wgrib2
+# mod 05/16 G. Schnee add support for template 5.42 compression using libaec
+# mod 10/16 W. Ebisuzaki add support for COMP_SYS
+# mod 10/17 W. Ebisuzaki modifications for vlab 
+# mod 07/20 W. Ebisuzaki modifications for make -j N (alpha)
+# mod 10/20 W. Ebisuzaki make portable between gmake 3 and 4 (having "echo ..#..")
+# mod 11/20 G. Trojan extracted pieces for conda build of libwgrib2
+#
+#   Configuration
+#
+# OPENMP:  OpenMP v3.1 compiler support is required for using OpenMP.
+#
+# IPOLATES: link in IPOLATES library to interpolate to new grids
+#    USE_IPOLATES=0    no ipolates library, no -new_grid
+#    USE_IPOLATES=1    use the grib1 version of ipolates
+#    USE_IPOLATES=3    use the double precision grib2 ipolates (default)
+#    if USE_IPOLATES=3, the fortran compiler needs to have
+#     options to convert reals to double precision and
+#     must not convert double precision to quad precision 
+#     gfortran, g95 and intel have it.  Otherwise very slow.
+#
+# SPECTRAL: spectral interpolation in -new_grid
+#    requires NCEP spectral library and USE_IPOLATES=3
+#
+# MAKE_FTN_API: make wgrib2api which allows fortran code to read/write grib2
+#    needs fortran2003 or fortran95 with extensions
+#
+#  REGEX: use regular expression library (POSIX-2), on by default
+#    change: USE_REGEX=0 if REGEX library is not available
+#     (preferred: get gnu source code to REGEX library)
+#
+#  TIGGE: ability for TIGGE-like variable names, on by default
+#    change: USE_TIGGE=0 to turn off (configuration below)
+# 
+#  USE_AEC: enable use of the libaec library for packing with GRIB2 template
+#    5.42 (https://gitlab.dkrz.de/k202009/libaec/)
+#
+#  DISABLE_ALARM:  some machines do not support alarm(..)
+#     alarm() is in POSIX-1 and IEEE Std 1003.1
+#     -alarm N, terminates wgrib2 after N seconds which is good for web servers
+
+SHELL=/bin/sh
+#
+# the flags are stored in wgrib2/config.h
+#
+USE_NETCDF4=1
+USE_REGEX=1
+USE_TIGGE=1
+USE_IPOLATES=3
+USE_SPECTRAL=1
+USE_OPENMP=1
+DISABLE_TIMEZONE=0
+DISABLE_ALARM=0
+
+# External libriaries, must be set to 1
+USE_PNG=1
+USE_JASPER=1
+USE_AEC=1
+
+# Add any customization comments, appears in help and config pages
+BUILD_COMMENTS=conda build
+
+cwd:=${CURDIR}
+lib:=${cwd}/lib
+tmp:=${cwd}/tmp
+export TMPDIR=${tmp}
+wLDFLAGS:=-L${lib}
+a:=$(shell mkdir -p ${lib})
+a:=$(shell mkdir -p ${tmp})
+wCPPFLAGS:=${CPPFLAGS} -I${cwd}/include
+wFFLAGS:=${FFLAGS}
+FTN_REAL8:="-fdefault-real-8 -fdefault-double-8"
+FTN_LEGACY:="-std=legacy -Wno-argument-mismatch"
+
+a:=$(shell mkdir -p ${lib})
+a:=$(shell mkdir -p ${cwd}/include)
+
+CONFIG_H=${cwd}/wgrib2/config.h
+a:=$(shell echo "/* config.h */" > ${CONFIG_H})
+
+H:=\#
+a:=$(shell echo '$Hdefine USE_PNG' >> ${CONFIG_H})
+a:=$(shell echo '$Hdefine USE_JASPER' >> ${CONFIG_H})
+a:=$(shell echo '$Hdefine USE_AEC' >> ${CONFIG_H})
+
+ifeq ($(USE_REGEX),1)
+   a:=$(shell echo '$Hdefine USE_REGEX' >> ${CONFIG_H})
+else
+   a:=$(shell echo '//$Hdefine USE_REGEX' >> ${CONFIG_H})
+endif
+
+ifeq ($(USE_TIGGE),1)
+   a:=$(shell echo '$Hdefine USE_TIGGE' >> ${CONFIG_H})
+else
+   a:=$(shell echo '//$Hdefine USE_TIGGE' >> ${CONFIG_H})
+endif
+
+ifeq ($(DISABLE_ALARM),1)
+   a:=$(shell echo '$Hdefine DISABLE_ALARM' >> ${CONFIG_H})
+else
+   a:=$(shell echo '//$Hdefine DISABLE_ALARM' >> ${CONFIG_H})
+endif
+
+ifeq ($(DISABLE_TIMEZONE),1)
+   a:=$(shell echo '$Hdefine DISABLE_TIMEZONE' >> ${CONFIG_H})
+else
+   a:=$(shell echo '//$Hdefine DISABLE_TIMEZONE' >> ${CONFIG_H})
+endif
+
+ifeq ($(USE_UDF),1)
+   a:=$(shell echo '$Hdefine USE_UDF' >> ${CONFIG_H})
+else
+   a:=$(shell echo '//$Hdefine USE_UDF' >> ${CONFIG_H})
+endif
+#
+# OPENMP
+ifeq ($(USE_OPENMP),1)
+   a:=$(shell echo '$Hdefine USE_OPENMP' >> ${CONFIG_H})
+   CFLAGS+=-fopenmp
+   # conda sets this flag
+   # wFFLAGS+=-fopenmp
+else
+   a:=$(shell echo '//$Hdefine USE_OPENMP' >> ${CONFIG_H})
+   wFFLAGS=${wFFLAGS/-fopenmp//}
+endif
+
+# gctpc library
+gctpcdir:=${cwd}/gctpc
+gctpclib:=${lib}/libgeo.a
+wLDFLAGS+=-lgeo
+
+ifeq ($(USE_IPOLATES),3)
+   ipdir:=${cwd}/ip2lib_d
+   iplib=${lib}/libip2_d.a
+   wLDFLAGS+=-lip2_d
+   a:=$(shell echo '$Hdefine USE_SPECTRAL '"${USE_SPECTRAL}" > ${ipdir}/config.h)
+   a:=$(shell echo '$Hdefine IPOLATES_LIB '\"`basename ${ipdir}`\" >> ${CONFIG_H})
+endif
+a:=$(shell echo '$Hdefine USE_IPOLATES ${USE_IPOLATES}' >> ${CONFIG_H})
+
+# SPECTRAL (optional used by ip2_d)
+spectraldir:=sp_v2.0.2_d
+ifeq ($(USE_SPECTRAL),1)
+   spectrallib:=${lib}/libsp_v2.0.2_d.a
+   wLDFLAGS+=-lsp_v2.0.2_d
+   a:=$(shell echo '$Hdefine USE_SPECTRAL 1' >> ${CONFIG_H})
+endif
+
+ifeq ($(USE_NETCDF4),1)
+   a:=$(shell echo '$Hdefine USE_NETCDF4' >> ${CONFIG_H})
+   a:=$(shell echo '$Hdefine HDF5' >> ${CONFIG_H})
+   wLDFLAGS+=-lnetcdf
+else
+   a:=$(shell echo '//$Hdefine USE_NETCDF4' >> ${CONFIG_H})
+endif
+
+# C compile and load commmands
+
+wCPPFLAGS+=-Wall -Wmissing-prototypes -Werror=format-security -ffast-math -Werror=implicit-function-declaration -DGFORTRAN
+wFFLAGS+=-c
+
+# write out compilation flags
+a:=$(shell echo '$Hdefine CPPFLAGS '\"${wCPPFLAGS}\" >> ${CONFIG_H})
+a:=$(shell echo '$Hdefine FFLAGS '\"${wFFLAGS}\" >> ${CONFIG_H})
+#
+# external libraries
+wLDFLAGS+=-laec -ljasper -lpng16 -lz -lgfortran -lm
+
+# save fortran and C compiler names in config.h file
+
+ifeq ($(findstring gnu-cc,$(notdir $(CC))),gnu-cc)
+   a:=$(shell echo '$Hdefine CC '\"`${CC} --version | head -n 1`\" >> ${CONFIG_H})
+else ifeq ($(findstring clang,$(notdir $(CC))),clang)
+   a:=$(shell echo '$Hdefine CC '\"`${CC} --version | head -n 1`\" >> ${CONFIG_H})
+endif
+
+ifeq ($(findstring gfortran,$(notdir $(FC))),gfortran)
+   a:=$(shell echo '$Hdefine FORTRAN '\"`${FC} --version | head -n 1`\" >> ${CONFIG_H})
+endif
+
+a:=$(shell echo '$Hdefine BUILD_COMMENTS '"\"${BUILD_COMMENTS}\"" >> ${CONFIG_H})
+
+MAKE:=make
+w=wgrib2
+
+all:	$w/*.c $w/*.h  ${gctpclib} ${iplib} ${spectrallib}
+	cd "$w" && export CPPFLAGS="${wCPPFLAGS} -Wold-style-definition" && ${MAKE} lib
+	cp wgrib2/libwgrib2.a lib/libwgrib2x.a
+	export CPPFLAGS="${wCPPFLAGS}" && cd c_api && ${MAKE}
+	cd lib && export CPPFLAGS="${wCPPFLAGS}" && export LIBS="${wLDFLAGS}" && ${MAKE} -f makefile.conda
+
+${gctpclib}:
+	cd "${gctpcdir}/source" && export CPPFLAGS="${wCPPFLAGS}" && ${MAKE} -f makefile.gctpc
+	cp ${gctpcdir}/source/libgeo.a ${lib}
+	cp ${gctpcdir}/source/proj.h ${cwd}/include/
+
+${iplib}:
+	cd "${ipdir}" && export FFLAGS="${wFFLAGS}" && export FTN_REAL8=${FTN_REAL8} && ${MAKE} && cp $(notdir ${iplib}) ${iplib}
+
+${spectrallib}:
+	cd "${spectraldir}" && export FFLAGS="${wFFLAGS}" && export FTN_REAL8=${FTN_REAL8} && export FTN_LEGACY=${FTN_LEGACY} && ${MAKE} && cp $(notdir ${spectrallib}) ${spectrallib}
+
+clean:
+	cd ${lib} && ${MAKE} clean || true
+	mkdir -p ${tmp} && rm -r ${tmp}
+	mkdir -p ${cwd}/bin && rm -r ${cwd}/bin 
+	mkdir -p ${cwd}/include && rm -r ${cwd}/include
+	mkdir -p ${cwd}/man && rm -r ${cwd}/man
+	mkdir -p ${cwd}/share  && rm -r ${cwd}/share
+	mkdir -p ${cwd}/tmp && rm -r ${cwd}/tmp
+	cd $w && ${MAKE} clean || true
+	[ "${gctpcdir}" != "" -a -f ${gctpcdir}/source/makefile.gctpc ] && ( cd ${gctpcdir}/source ; ${MAKE} -f makefile.gctpc clean ) || true
+	[ "${ipdir}" != "" -a -f ${ipdir}/Makefile ] && ( cd ${ipdir} ; ${MAKE} clean ) || true
+	[ "${spectraldir}" != "" -a -f ${spectraldir}/Makefile ] && ( cd ${spectraldir} ; ${MAKE} clean ) || true
