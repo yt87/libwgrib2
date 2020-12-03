@@ -1,0 +1,9 @@
+                    libwgrib2's copyrights and licences
+
+libwgrib2 and its components:
+
+gctpc(geolocation): USGS
+iplib(interpolation): NCEP/NOAA
+splib(interpolation): NCEP/NOAA
+
+are all released as public domain.
