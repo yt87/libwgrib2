@@ -8,7 +8,7 @@ For the official distribution of *wgrib2*, see
     https://www.cpc.ncep.noaa.gov/products/wesley/wgrib2
 
 This repository is used to build `conda <https://conda.io/>`_ package.
-Original ource code is not modified.
+Original source code (as of 2020-10-27) is not modified.
 
 The difference between the NCEP distribution and library build by conda is
 external libraries. NCEP distribution contains *libaec*, *jasper*,
