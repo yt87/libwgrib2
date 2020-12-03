@@ -7,7 +7,9 @@
 #include "wgrib2.h"
 #include "fnlist.h"
 
-#if defined USE_JASPER  || defined USE_OPENJPEG
+#ifdef USE_JASPER
+
+#include <jasper/jasper.h>
 
 /*
  *  writes out jpeg2000 compressed grib message
@@ -101,13 +103,11 @@ int jpeg2000_grib_out(unsigned char **sec, float *data, unsigned int ndata,
 
     if (bin_scale) {
         scale = ldexp(1.0, -bin_scale);
-// #pragma omp parallel for private(j)
         for (j = 0; j < n_defined; j++) {
             data[j] = (data[j] - ref)*scale;
         }
     }
     else {
-// #pragma omp parallel for private(j)
         for (j = 0; j < n_defined; j++) {
             data[j] = data[j] - ref;
         }
@@ -117,28 +117,26 @@ int jpeg2000_grib_out(unsigned char **sec, float *data, unsigned int ndata,
         nbytes = (nbits + 7) / 8;
         if (nbytes > 4) fatal_error_i("jpeg2000_grib_out number of bytes is %d > 4", nbytes);
 
-#ifdef USE_JASPER
-        /* floats -> integers -> bytes */
+        /* Pack integers into bytes */
 
         cdata = (unsigned char *) malloc(nbytes * (size_t) n_defined);
         if (cdata == NULL) fatal_error("memory alloc jpeg encoding","");
+        p = cdata; 
         if (nbytes == 1) {
-#pragma omp parallel for private(i,j)
             for (j = 0; j < n_defined; j++) {
     	        i = (int) floor(data[j]+0.5);
-	        cdata[j] = i & 255;
+	        *p++ = i & 255;
 	    }
         }
         else if (nbytes == 2) {
-#pragma omp parallel for private(i,j)
             for (j = 0; j < n_defined; j++) {
 	        i = (int) floor(data[j]+0.5);
-	        cdata[2*j] = (i >> 8) & 255;
-	        cdata[2*j+1] = i & 255;
+	        p[0] = (i >> 8) & 255;
+	        p[1] = i & 255;
+	        p += 2;
 	    }
         }
         else if (nbytes > 0) {
-            p = cdata; 
             for (j = 0; j < n_defined; j++) {
 	        i = (int) floor(data[j]+0.5);
 	        for (k = 1; k <= nbytes; k++) {
@@ -150,8 +148,6 @@ int jpeg2000_grib_out(unsigned char **sec, float *data, unsigned int ndata,
         }
 
 //    jas_init();
-#endif
-
         ltype = 0;
         ratio = 1;
         retry = 0;
@@ -159,19 +155,15 @@ int jpeg2000_grib_out(unsigned char **sec, float *data, unsigned int ndata,
         jpclen = 4*n_defined+200;
         outjpc = (char *) malloc(jpclen);
 
-#ifdef USE_JASPER
         i = enc_jpeg2000_clone(cdata,ix,iy,nbits,ltype,ratio,retry,outjpc,jpclen);
+
         // we try to catch following error: "error: too few guard bits (need at least x)"
         if (i == -3) {
             retry = 1;
             i = enc_jpeg2000_clone(cdata,ix,iy,nbits,ltype,ratio,retry,outjpc,jpclen);
         }
-	free(cdata);
-#endif
-#ifdef USE_OPENJPEG
-        i = enc_jpeg2000_clone_float(data,ix,iy,nbits,ltype,ratio,retry,outjpc,jpclen);
-#endif
 
+	free(cdata);
 	if (i <= 0) fatal_error_i("enc_jpeg error %d", i);
     }
     else {   // nbits == 0 || n_defined == 0

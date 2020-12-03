@@ -21,7 +21,7 @@
 #endif
 
 #ifndef WGRIB2_VERSION
-#define WGRIB2_VERSION "v3.0.1beta 11/2020  Wesley Ebisuzaki, Reinoud Bokhorst, John Howard, Jaakko Hyvätti, Dusan Jovic, \
+#define WGRIB2_VERSION "v3.0.1beta 10/2020  Wesley Ebisuzaki, Reinoud Bokhorst, John Howard, Jaakko Hyvätti, Dusan Jovic, \
 Daniel Lee, Kristian Nilssen, Karl Pfeiffer, Pablo Romero, Manfred Schwarb, Gregor Schee, Arlindo da Silva, \
 Niklas Sondell, Sam Trahan, George Trojan, Sergey Varlamov"
 #endif
@@ -234,7 +234,6 @@ void BDS_unpack(float *flt, unsigned char *bits, unsigned char *bitmap,
 
 void setup_user_gribtable(void);
 int getName(unsigned char **sec, int mode, char *inv_out, char *name, char *desc, char *unit);
-int getName_all(unsigned char **sec, int mode, char *inv_out, char *name, char *desc, char *unit, int *mset, int *mlow, int *mhigh);
 
 int rd_inventory(int *rec_num, int *submsg, long int *pos, struct seq_file *);
 int get_nxny(unsigned char **sec, int *nx, int *ny, unsigned int *npnts, int *res, int *scan);
@@ -382,12 +381,7 @@ int number_of_mode(unsigned char **sec);
 int mode_number(unsigned char **sec);
 int smallest_pdt_len(int pdt);
 int type_of_post_processing(unsigned char **sec);
-int cluster_identifier(unsigned char **sec);
-unsigned char *cluster_identifier_location(unsigned char **sec);
-int number_of_clusters(unsigned char **sec);
-unsigned char *number_of_clusters_location(unsigned char **sec);
-int number_of_forecasts_in_the_cluster(unsigned char **sec);
-unsigned char *number_of_forecasts_in_the_cluster_location(unsigned char **sec);
+
 
 int flag_table_3_3(unsigned char **sec);
 int set_flag_table_3_3(unsigned char **sec, unsigned int flag);
@@ -457,9 +451,6 @@ unsigned char *mk_bms(float *data, unsigned int *ndata);
 int dec_png_clone(unsigned char *pngbuf,int *width,int *height,char *cout);
 int enc_jpeg2000_clone(unsigned char *cin,int width,int height,int nbits, int ltype, 
 	int ratio, int retry, char *outjpc, int jpclen);
-#ifdef USE_OPENJPEG
-int dec_jpeg2000_clone(char *injpc, int bufsize, int *outfld);
-#endif
 int ieee_grib_out(unsigned char **sec, float *data, unsigned int ndata, struct seq_file *out);
 int jpeg_grib_out(unsigned char **sec, float *data, unsigned int ndata, 
     int nx, int ny, int use_scale, int dec_scale, int bin_scale, FILE *out);
@@ -533,8 +524,6 @@ int fix_ncep_2(unsigned char **sec);
 int fix_ncep_3(unsigned char **sec);
 int fix_ncep_4(unsigned char **sec);
 int fix_undef(unsigned char **sec);
-
-int check_pdt_size(unsigned char **sec);
 
 const char *wgrib2api_info(void);
 

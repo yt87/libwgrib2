@@ -76,7 +76,6 @@ USE_SPECTRAL=1
 USE_OPENMP=1
 DISABLE_TIMEZONE=0
 DISABLE_ALARM=0
-USE_OPENJPEG=0
 
 # External libriaries, must be set to 1 
 USE_PNG=1
@@ -107,7 +106,6 @@ a:=$(shell echo "/* config.h */" > ${CONFIG_H})
 H:=\#
 a:=$(shell echo '$Hdefine USE_PNG' >> ${CONFIG_H})
 a:=$(shell echo '$Hdefine USE_JASPER' >> ${CONFIG_H})
-a:=$(shell echo '$Hdefine USE_OPEN' >> ${CONFIG_H})
 a:=$(shell echo '$Hdefine USE_AEC' >> ${CONFIG_H})
 
 ifeq ($(USE_REGEX),1)

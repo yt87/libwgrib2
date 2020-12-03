@@ -26,8 +26,6 @@ int f_aerosol_wavelength(int mode, unsigned char **sec, float *data, unsigned in
 int f_bitmap(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_center(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_checksum(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
-int f_cluster(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
-int f_cluster_info(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_code_table_0_0(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_code_table_1_0(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_code_table_1_1(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
@@ -121,7 +119,6 @@ int f_misc(int mode, unsigned char **sec, float *data, unsigned int ndata, char 
 int f_MM(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_model_version_date(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_n(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
-int f_N_clusters(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_N_ens(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_nl(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_nlons(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
@@ -186,7 +183,6 @@ int f_print_out(int mode, unsigned char **sec, float *data, unsigned int ndata, 
 int f_s_out(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_big_endian(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_box_ave(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1, const char *arg2, const char *arg3);
-int f_check_pdt_size(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_colon(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_config(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_count(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
@@ -225,7 +221,6 @@ int f_new_grid_winds(int mode, unsigned char **sec, float *data, unsigned int nd
 int f_no_header(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_proj4(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_end(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
-int f_read_sec(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1, const char *arg2);
 int f_rewind_final(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_rewind_proc(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_rpn(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
@@ -305,7 +300,6 @@ int f_grib_ieee(int mode, unsigned char **sec, float *data, unsigned int ndata, 
 int f_grib_out(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_grib_out_irr(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1, const char *arg2);
 int f_grib_out_irr2(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5);
-int f_gribtable_used(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_gridout(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_ieee(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_ijbox(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1, const char *arg2, const char *arg3, const char *arg4);
@@ -332,7 +326,6 @@ int f_unmerge_fcst(int mode, unsigned char **sec, float *data, unsigned int ndat
 int f_wind_dir(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_wind_speed(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_wind_uv(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
-int f_write_sec(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1, const char *arg2);
 int f_alarm(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local, const char *arg1);
 int f_append(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);
 int f_crlf(int mode, unsigned char **sec, float *data, unsigned int ndata, char *inv, void **local);

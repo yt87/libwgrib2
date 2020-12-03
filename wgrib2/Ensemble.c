@@ -77,11 +77,8 @@ int f_ens(ARG0) {
 	        case 197: if (center == NCEP)  string = "percentile from climate distribution"; break;
 	        case 198: if (center == NCEP)  string = "deviation of ens mean from daily climo"; break;
 	        case 199: if (center == NCEP)  string = "extreme forecast index"; break;
-	        case 200: if (center == NCEP)  string = "equally weighted mean"; break;
-	        case 201: if (center == NCEP)  string = "5% all members"; break;
-	        case 202: if (center == NCEP)  string = "25% all members"; break;
-	        case 203: if (center == NCEP)  string = "75% all members"; break;
-	        case 204: if (center == NCEP)  string = "95% all members"; break;
+	        case 200: if (center == NCEP)  string = "25% all members"; break;
+	        case 201: if (center == NCEP)  string = "75% all members"; break;
 	    }
 	    sprintf(inv_out,"%s", string);
 	    inv_out += strlen(inv_out);

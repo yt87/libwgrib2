@@ -61,7 +61,7 @@ int for_n_mode, for_n_start, for_n_end, for_n_step;
 int match, match_fs;
 extern int run_flag;
 
-int last_message;	/* last message to process if set > 0 */
+int last_message;	/* last message to process if set */
 
 struct seq_file inv_file;
 struct seq_file rd_inventory_input;
@@ -476,9 +476,7 @@ int wgrib2(int argc, const char **argv) {
 
 	if (for_mode) {
 	    if (msg_no < for_start || msg_no > for_end || ((msg_no - for_start) % for_step) != 0) {
-	        if (msg_no > for_end && input != inv_mode) {
-		   if (last_message == 0) last_message = 1;
-		}
+	        if (msg_no > for_end && input != inv_mode) last_message = 1;
 		submsg++;
 		continue;
 	    }
@@ -630,12 +628,6 @@ int wgrib2(int argc, const char **argv) {
 		err_4_3_count++;
 	    }
         }
-
-	/* check the PDT size */
-	if (check_pdt_size(sec) == 0) {
-	    fprintf(stderr,"*** wgrib2 delayed fatal error 2: PDT size is incorrect***\n");
-	    last_message = 2;	// terminate after processing
-	}
 #endif
 
 	if (decode) {
@@ -924,14 +916,6 @@ int wgrib2(int argc, const char **argv) {
             // if (inv_out[0]) fprintf(stderr, "%s\n", inv_out);
             if (inv_out[0]) fprintf(stderr, "%s%s", inv_out, end_inv);
 //        }
-    }
-    if (last_message > 1) {
-        fclose_file(&in_file);
-        if (ndata) {
-	    ndata = 0;
-	    free(data);
-        }
-	fatal_error_i("wgrib2: delayed fatal error %d", last_message);
     }
     err_bin(0); err_string(0);
     fclose_file(&in_file);

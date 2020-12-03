@@ -12,8 +12,7 @@
  */
 extern int last_message;                /* last message to process */
 int f_end(ARG0) {
-    // if last message is already set,  don't change error code
-    if (mode >= 0 && last_message == 0) last_message = 1;
+    if (mode >= 0) last_message = 1;
     return 0;
 }
 

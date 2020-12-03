@@ -1776,7 +1776,7 @@ v0.2.0.8   2/2019 - v2.0.8
 		fseek_file: works with pipe is whence is SEEK_CUR, needed by -d dump_offset
 		init.c wgrib2.c: updates for -d dump_offset
 		ffopen.c change mode of file by freopen: (George Trojan)
-		added: geolocation variable that indicates which geolocation package created lat/lon values
+		added: fvariable that indicates which geolocation package created lat/lon values
 		added: -geolocation which prints out which geolocation package created lat/lon values
 		added: -new_grid_format
 		makefile: fix typos to make USE_G2CLIB work, submitted G. Trojan
@@ -1822,29 +1822,9 @@ v0.2.0.8   2/2019 - v2.0.8
 		added fatal_error_lu(..)
 		added check for memory allocation in rd_seq_grib.c  found by George Trojan
 		wgrib2.h changed INV_BUFFER from 50000 to 100000
-		added pyinv: for pywgrib2_xr and pywgrib2_lite, George Trojan, expermental
 v3.0.0        9/2020 - v2.0.8
 		unmerge_fcst: fix error messages
-		makefile fails for gnu make v4.3, fixed
+		portable makefile for make 4.3 and older
 		makefile, lib/makefile: add make shared library support for clang/flang
 		makefile, lib/makefile: minor fixes, mac update for FTN_LEGACY, George Trojan
-		added -gribtable_used, thanks Manfred Schwarb
-		if USE_REGEX == 0, warn_nonzero_min_sec is never defined. reported Kyle Gerheiser, EMC
-		   only affects compilers without the regex library (windows C compilers .. Watcom?)
-		   split Match.c -> Match.c and Match_inv.c
-		updated for OpenJPEG: makefile, jpeg_pk.c unpk.c wgrib2.h Grib.c Config.c
-		added for OpenJPEG: enc_jpeg2000_openjpeg.c, decenc_openjpeg.c: from ECMWF with mods by Dusan Jovic
-		OpenJPEG: optional replacement for jasper
-		jpeg_pk.c: parallelize some loops
-		fixed: code table 4.8 was pointing wrong location
-		fixed: code table 4.7 had bad entries (200,201), updated code table 4.7
-		added more pdts to code table 4.8
-		fixed: ExtName.c and f_misc(..) with regards to trailing : in inventory .. should be the same inv
-		updated -set: cluster
-		added check for pdt size: check_pdt_size(sec), 
-		added delayed fatal errors using last message > 1
-		   problem, could not see last message that caused error, added check_pdt_size to delayed errors
-		   redefined last_message: old: 0/1 (stop), new 0/1..N (stop), contains error reason for last_message > 0
-		   updated wgrib2.c f_end(sec)
-		-bin: added check for error in writing header
-		added: -export_sec, -import_sec
+

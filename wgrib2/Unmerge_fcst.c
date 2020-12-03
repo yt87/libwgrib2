@@ -71,7 +71,7 @@ int f_unmerge_fcst(ARG3) {
         string[2] = 0;
         if (j != 2) fatal_error("unmerge_fcst: bad (int)(mn|hr|dy|mo|yr)","");
         save->fcst_units = string2time_unit(string);
-        if (save->fcst_units == -1) fatal_error("ndates: unsupported time unit %s", string);
+        if (save->fcst_units == -1) fatal_error("unmerge_fcst: unsupported time unit %s", string);
 
 	save->output_option = atoi(arg3);
 

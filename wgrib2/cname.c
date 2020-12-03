@@ -28,7 +28,7 @@ extern struct gribtable_s tigge_gribtable[];
  */
 
 
-int getName_all(unsigned char **sec, int mode, char *inv_out, char *name, char *desc, char *unit, int *mset, int *mlow, int *mhigh) {
+int getName(unsigned char **sec, int mode, char *inv_out, char *name, char *desc, char *unit) {
 
     int discipline, center, mastertab, localtab, parmcat, parmnum;
     int pdt;
@@ -64,9 +64,6 @@ int getName_all(unsigned char **sec, int mode, char *inv_out, char *name, char *
 	    inv_out += strlen(inv_out);
             if (mode) sprintf(inv_out," %s [%s]", p->desc, p_unit);
         }
-	*mset = p->mtab_set;
-	*mlow = p->mtab_low;
-	*mhigh = p->mtab_high;
     }
     else {
         discipline = GB2_Discipline(sec);
@@ -75,9 +72,6 @@ int getName_all(unsigned char **sec, int mode, char *inv_out, char *name, char *
         localtab = GB2_LocalTable(sec);
         parmcat = GB2_ParmCat(sec);
         parmnum = GB2_ParmNum(sec);
-	*mset = 0;
-	*mlow = 0;
-	*mhigh = 255;
 
         if (name) sprintf(name,"var%d_%d_%d",discipline,parmcat,parmnum);
 	if (desc) strcpy(desc,"desc");
@@ -99,17 +93,11 @@ int getName_all(unsigned char **sec, int mode, char *inv_out, char *name, char *
     return 0;
 }
 
-int getName(unsigned char **sec, int mode, char *inv_out, char *name, char *desc, char *unit) {
-   int mset, mlow, mhigh;
-
-   return getName_all(sec, mode, inv_out, name, desc, unit, &mset, &mlow, &mhigh);
-}
-
 /*
  * search the grib table
  */
 
-static struct gribtable_s *search_gribtable(struct gribtable_s *p, unsigned char **sec) {
+static struct gribtable_s *search_gribtable(struct gribtable_s *p, unsigned char **sec){
 
     int discipline, center, mastertab, localtab, parmcat, parmnum;
     int use_local_table;

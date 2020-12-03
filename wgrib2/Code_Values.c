@@ -33,13 +33,15 @@ int number_of_forecasts_in_the_ensemble(unsigned char **sec) {
 }
 
 unsigned char *number_of_forecasts_in_the_ensemble_location(unsigned char **sec) {
-    int pdt, nb, np, nc;
+    int pdt, nb;
     unsigned char *p;
 
     pdt = code_table_4_0(sec);
     switch(pdt) {
 	case 1:
 	case 11:
+        case 60:
+        case 61:
 		p = sec[4]+36; break;
 	case 2:
 	case 3:
@@ -54,24 +56,6 @@ unsigned char *number_of_forecasts_in_the_ensemble_location(unsigned char **sec)
 	case 41:
 	case 43:
 		p = sec[4]+38; break;
-	case 45:
-	case 47:
-		p = sec[4]+49; break;
-	case 49:
-		p = sec[4]+60; break;
-	case 54:
-		np = sec[4][12];
-		p = sec[4]+40+2*np; break;
-	case 56:
-		p = sec[4]+41; break;
-	case 58:
-		np = sec[4][19];
-		p = sec[4]+45+5*np; break;
-	case 59:
-		p = sec[4]+42; break;
-	case 60:
-	case 61:
-		p = sec[4]+36; break;
 	case 71:
 	case 73: p = sec[4] + 41; break;
 	default: p=NULL; break;
@@ -455,7 +439,7 @@ int percentile_value(unsigned char **sec) {
 	return (int) *p;
 }
 /*
- * returns location of the percentile value
+ * returns locatin of the percentile value
  */
 unsigned char *percentile_value_location(unsigned char **sec) {
 
@@ -592,76 +576,3 @@ int type_of_post_processing(unsigned char **sec) {
     return (int) sec[4][15];
 }
 
-/* 
- * returns value of cluster identifier (assume unsigned char)
- */
-int cluster_identifier(unsigned char **sec) {
-        unsigned char *p;
-        p = cluster_identifier_location(sec);
-        if (p == NULL) return -1;
-        return (int) *p;
-}
-/*
- * returns location of cluster identifier
- */
-unsigned char *cluster_identifier_location(unsigned char **sec) {
-
-    int pdt;
-    unsigned char *p;
-    pdt = code_table_4_0(sec);
-    switch (pdt) {
-	case 3:
-	case 4:
-	case 13:
-	case 14:
-	    p = sec[4] + 36; break;
-        default: p = NULL; break;
-    }
-    return p;
-}
-
-
-int number_of_clusters(unsigned char **sec) {
-        unsigned char *p;
-        p = number_of_clusters_location(sec);
-        if (p == NULL) return -1;
-        return (int) *p;
-}
-
-unsigned char *number_of_clusters_location(unsigned char **sec) {
-    int pdt;
-    unsigned char *p;
-    pdt = code_table_4_0(sec);
-    switch (pdt) {
-        case 3:
-        case 4:
-        case 13:
-        case 14:
-            p = sec[4] + 39; break;
-        default: p = NULL; break;
-    }
-    return p;
-}
-
-int number_of_forecasts_in_the_cluster(unsigned char **sec) {
-        unsigned char *p;
-        p = number_of_forecasts_in_the_cluster_location(sec);
-        if (p == NULL) return -1;
-        return (int) *p;
-}
-
-unsigned char *number_of_forecasts_in_the_cluster_location(unsigned char **sec) {
-    int pdt;
-    unsigned char *p;
-    pdt = code_table_4_0(sec);
-    switch (pdt) {
-        case 3:
-        case 13:
-            p = sec[4] + 57; break;
-        case 4:
-        case 14:
-            p = sec[4] + 53; break;
-        default: p = NULL; break;
-    }
-    return p;
-}

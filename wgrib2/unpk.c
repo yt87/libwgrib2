@@ -58,10 +58,6 @@ int unpk_grib(unsigned char **sec, float *data) {
     jas_matrix_t *jas_data;
     int j, k;
 #endif
-#ifdef USE_OPENJPEG
-    int *ifld, err;
-    unsigned int kk;
-#endif
 
 #if (defined USE_PNG || defined USE_AEC)
     unsigned char *c;
@@ -75,6 +71,7 @@ int unpk_grib(unsigned char **sec, float *data) {
 #endif
 
     packing = code_table_5_0(sec);
+    // ndata = (int) GB2_Sec3_npts(sec);
     ndata = GB2_Sec3_npts(sec);
     bitmap_flag = code_table_6_0(sec);
 
@@ -165,8 +162,7 @@ int unpk_grib(unsigned char **sec, float *data) {
     else if (packing == 200) {				// run length
 	return unpk_run_length(sec, data, ndata);
     }
-
-#if defined USE_JASPER || defined USE_OPENJPEG
+#ifdef USE_JASPER
     else if (packing == 40 ||  packing == 40000) {		// jpeg2000
 	p = sec[5];
 	reference = ieee2flt(p+11);
@@ -197,8 +193,6 @@ int unpk_grib(unsigned char **sec, float *data) {
         }
 
 	// decode jpeg2000
-
-#ifdef USE_JASPER
 
         image = NULL;
 	opts = NULL;
@@ -241,35 +235,8 @@ int unpk_grib(unsigned char **sec, float *data) {
 	jas_stream_close(jpcstream);
 	jas_image_destroy(image);
 	return 0;
-#endif
-#ifdef USE_OPENJPEG
-        ifld = (int *) malloc(ndata * sizeof(int));
-	if (ifld == 0) fatal_error("unpk: memory allocation error","");
-	err = dec_jpeg2000_clone((char *) sec[7]+5, (int) GB2_Sec7_size(sec)-5, ifld);
-	if (err != 0) fatal_error_i("dec_jpeg2000, error %d",err);
-
-        if (bitmap_flag == 255) {
-#pragma omp parallel for private(ii)
-	    for (ii = 0; ii < ndata; ii++) {
-		data[ii] = ((ifld[ii]*bin_scale)+reference)*dec_scale;
-	    }
-	}
-        else if (bitmap_flag == 0 || bitmap_flag == 254) {
-            mask_pointer = sec[6] + 6;
-            mask = 0;
-	    kk = 0;
-            for (ii = 0; ii < ndata; ii++) {
-                if ((ii & 7) == 0) mask = *mask_pointer++;
-                data[ii] = (mask & 128) ? ((ifld[kk++]*bin_scale)+reference)*dec_scale : UNDEFINED;
-                mask <<= 1;
-            }
-	}
-	free(ifld);
-	return 0;
-#endif
     }
 #endif
-
 #ifdef USE_PNG
     else if (packing == 41) {		// png
 	p = sec[5];

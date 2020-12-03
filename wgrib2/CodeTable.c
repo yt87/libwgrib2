@@ -1095,8 +1095,6 @@ unsigned char *code_table_4_7_location(unsigned char **sec) {
 	case 3:
 	case 4:
 	case 12:
-	case 13:
-	case 14:
 		return sec[4]+34; break;
     }
     return NULL;
@@ -1133,10 +1131,8 @@ unsigned char *code_table_4_8_location(unsigned char **sec) {
     pdt = GB2_ProdDefTemplateNo(sec);
     switch (pdt) {
 	case 3:
-	case 4:
 	case 13:
-	case 14:
-		return sec[4]+40; break;
+		return sec[4]+34; break;
     }
     return NULL;
 }

@@ -448,7 +448,7 @@ static const char *set_options="discipline, center, subcenter, master_table, loc
         "table_3.0, table_3.1/GDT, table_3.2, " 
 	"table_3.3, table_3.4, table_4.0/PDT, table_4.1, table_4.2, table_4.3, table_4.5a, table_4.5b, table_4.6, "
         "table_4.7, table_4.8, table_4.10, "
-        "table_4.11, table_4.230, table_5.0/DRT, table_6.0, %, cluster";
+        "table_4.11, table_4.230, table_5.0/DRT, table_6.0, %";
 extern struct codetable_4_230  codetable_4_230_table[];
 
 
@@ -674,11 +674,7 @@ int f_set(ARG2) {
 	    if (p) *p = (unsigned char) i;
 	    return 0;
 	}
-	if (strcmp(arg1,"cluster") == 0) {
-	    p = cluster_identifier_location(sec);
-	    if (p) *p = (unsigned char) i;
-	    return 0;
-	}
+
 	fatal_error("set: allowed values: %s", set_options);
 
 	return 1;

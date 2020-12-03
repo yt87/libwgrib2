@@ -36,102 +36,117 @@ extern struct codetable_4_230  codetable_4_230_table[];
 int f_misc(ARG0) {
 
     const char *string;
+    int need_space = 0;
     int pdt, val, j;
     static int error_count = 0;
-    char *inv_out_init;
- 
+
     if (mode < 0) return 0;
 
     pdt = GB2_ProdDefTemplateNo(sec);
-    inv_out_init = inv_out += strlen(inv_out);
+    inv_out += strlen(inv_out);
 
     f_ens(call_ARG0(inv_out,NULL) );
     if (strlen(inv_out)) {
-	strcat(inv_out,":");
-        inv_out += strlen(inv_out);
-    }
-
-    f_cluster(call_ARG0(inv_out,NULL) );
-    if (strlen(inv_out)) {
-	strcat(inv_out,":");
+	if (need_space) strcat(inv_out,":");
+	need_space = 1;
         inv_out += strlen(inv_out);
     }
 
     f_prob(call_ARG0(inv_out,NULL));
     if (strlen(inv_out)) {
-	strcat(inv_out,":");
+	if (need_space) strcat(inv_out,":");
+	need_space = 1;
         inv_out += strlen(inv_out);
     }
     
     f_spatial_proc(call_ARG0(inv_out,NULL));
     if (strlen(inv_out)) {
-	strcat(inv_out,":");
+	if (need_space) strcat(inv_out,":");
+	need_space = 1;
         inv_out += strlen(inv_out);
     }
 
     f_wave_partition(call_ARG0(inv_out,NULL) );
     if (strlen(inv_out)) {
-	strcat(inv_out,":");
+	if (need_space) strcat(inv_out,":");
+	need_space = 1;
         inv_out += strlen(inv_out);
     }
+    inv_out += strlen(inv_out);
 
     f_post_processing(call_ARG0(inv_out,NULL) );
     if (strlen(inv_out)) {
-	strcat(inv_out,":");
+	if (need_space) strcat(inv_out,":");
+	need_space = 1;
         inv_out += strlen(inv_out);
     }
     inv_out += strlen(inv_out);
 
     f_JMA(call_ARG0(inv_out,NULL) );
     if (strlen(inv_out)) {
-	strcat(inv_out,":");
+	if (need_space) strcat(inv_out,":");
+	need_space = 1;
         inv_out += strlen(inv_out);
     }
+
 
     /* end of f_XXX(call_ARG0(inv_out,NULL) ); */
 
+
     val = code_table_4_3(sec);
     if (val == 5) {
-	strcat(inv_out,"probability forecast:");
-        inv_out += strlen(inv_out);
+	if (need_space) strcat(inv_out,":");
+	strcat(inv_out,"probability forecast");
     }
     else if (val == 6 || val == 7) {
-	strcat(inv_out,"analysis/forecast error:");
-        inv_out += strlen(inv_out);
+	if (need_space) strcat(inv_out,":");
+	strcat(inv_out,"analysis/forecast error");
+	need_space = 1;
     }
     else if (val == 9) {
-	strcat(inv_out,"climatological:");
-        inv_out += strlen(inv_out);
+	if (need_space) strcat(inv_out,":");
+	strcat(inv_out,"climatological");
+	need_space = 1;
     }
     else if (GB2_Center(sec) == 7 && val == 192) {
-	strcat(inv_out,"Confidence Indicator:");
-        inv_out += strlen(inv_out);
+	if (need_space) strcat(inv_out,":");
+	strcat(inv_out,"Confidence Indicator");
+	need_space = 1;
     }
     else if (GB2_Center(sec) == 7 && val == 194) {
-	strcat(inv_out,"Neighborhood Probability:");
-        inv_out += strlen(inv_out);
+	if (need_space) strcat(inv_out,":");
+	strcat(inv_out,"Neighborhood Probability");
+	need_space = 1;
     }
     else if (val >= 192 && val != 255) {
-	sprintf(inv_out,"process=%d:", val);
+	if (need_space) strcat(inv_out,":");
 	inv_out += strlen(inv_out);
+	sprintf(inv_out,"process=%d", val);
+	need_space = 1;
     }
 
     if (pdt == 7) {
-	strcat(inv_out,"analysis/forecast error:");
-	inv_out += strlen(inv_out);
+	if (need_space) strcat(inv_out,":");
+	strcat(inv_out,"analysis/forecast error");
+	need_space = 1;
     }
     else if (pdt == 6 || pdt == 10) {
-        f_percent(call_ARG0(inv_out,NULL) );
-	strcat(inv_out," level:");
+	if (need_space) strcat(inv_out,":");
 	inv_out += strlen(inv_out);
+        f_percent(call_ARG0(inv_out,NULL) );
+	strcat(inv_out," level");
+	need_space = 1;
     }
     else if (pdt >= 31 && pdt <= 34) {
-        f_spectral_bands_extname(call_ARG0(inv_out,local));
-	strcat(inv_out,":");
+	if (need_space) strcat(inv_out,":");
 	inv_out += strlen(inv_out);
+        f_spectral_bands_extname(call_ARG0(inv_out,local));
+	need_space = 1;
     }
 
    if ( (val = code_table_4_230(sec)) != -1) {
+	if (need_space) strcat(inv_out,":");
+	strcat(inv_out,"chemical=");
         val = code_table_4_230(sec);
         if (val >= 0) {
             if (GB2_MasterTable(sec) <= 4) {
@@ -163,11 +178,11 @@ int f_misc(ARG0) {
 		sprintf(inv_out,"%d",val);
 	    }
 	}
-	strcat(inv_out,":");
-	inv_out += strlen(inv_out);
+	need_space = 1;
     }
 
     if ( (val = code_table_4_233(sec)) != -1) {
+	if (need_space) strcat(inv_out,":");
 	strcat(inv_out,"aerosol=");
         val = code_table_4_233(sec);
         if (val >= 0) {
@@ -181,27 +196,23 @@ int f_misc(ARG0) {
                 sprintf(inv_out,"chemical_%d",val);
             }
         }
-	strcat(inv_out,":");
-        inv_out += strlen(inv_out);
+        need_space = 1;
     }
 
     if (pdt >= 44 && pdt <= 47) {
-        f_aerosol_size(call_ARG0(inv_out,NULL));
-	strcat(inv_out,":");
+	if (need_space) strcat(inv_out,":");
 	inv_out += strlen(inv_out);
+        f_aerosol_size(call_ARG0(inv_out,NULL));
+	need_space = 1;
     }
     if (pdt == 48) {
+	if (need_space) strcat(inv_out,":");
+	inv_out += strlen(inv_out);
         f_aerosol_size(call_ARG0(inv_out,NULL));
         strcat(inv_out,":");
 	inv_out += strlen(inv_out);
         f_aerosol_wavelength(call_ARG0(inv_out,NULL));
-        strcat(inv_out,":");
-	inv_out += strlen(inv_out);
-    }
-
-    /* get rid of tailing : */
-    if (inv_out > inv_out_init) {
-        if (inv_out[-1] == ':') inv_out[-1] = 0;
+	need_space = 1;
     }
 
     return 0;

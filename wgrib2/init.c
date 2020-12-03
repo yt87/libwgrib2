@@ -140,9 +140,6 @@ extern int match_extra_fn_n;
 
 extern char ndates_fmt[NAMELEN];
 
-extern int check_pdt_size_flag;
-extern int warn_check_pdt;
-
 void init_globals(void) {
     int i;
 
@@ -191,8 +188,6 @@ void init_globals(void) {
     dump_msg = 0, dump_submsg = 0;
     dump_offset = 0;
     ieee_little_endian = 0;
-    check_pdt_size_flag = 1;
-    warn_check_pdt = 1;
 
     decode = 0;         /* decode grib file flag */
 

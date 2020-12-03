@@ -58,10 +58,7 @@ int f_config(ARG0) {
     inv_out += strlen(inv_out);
 //    sprintf(inv_out,"JAS_VERSION_MAJOR=%d\n", JAS_VERSION_MAJOR);
 #endif
-#ifdef USE_OPENJPEG
-    strcat(inv_out,"OpenJPEG is installed\n");
-    inv_out += strlen(inv_out);
-#endif
+
 
 #ifdef USE_MYSQL
     strcat(inv_out, "mysql package is installed\n");
@@ -172,7 +169,7 @@ strcat(inv_out, "  spherical geolocation is enabled\n");
 #ifdef USE_PNG
     strcat(inv_out, ", png");
 #endif
-#if defined USE_JASPER || defined USE_OPENJPEG
+#ifdef USE_JASPER
     strcat(inv_out, ", jpeg2000");
 #endif
 #ifdef USE_AEC
@@ -181,7 +178,7 @@ strcat(inv_out, "  spherical geolocation is enabled\n");
     strcat(inv_out, "\n");
 
     strcat(inv_out,"Supported encoding: simple, complex, ieee");
-#if defined USE_JASPER || defined USE_OPENJPEG
+#ifdef USE_JASPER
     strcat(inv_out, ", jpeg2000");
 #endif
 #ifdef USE_AEC
