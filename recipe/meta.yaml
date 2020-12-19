@@ -1,8 +1,7 @@
 {% set name = "libwgrib2" %}
-# {% set version = environ.get('GIT_DESCRIBE_TAG', 'untagged')|string|replace('-','_') %}
+{% set version = environ.get('GIT_DESCRIBE_TAG', 'untagged')|string|replace('-','_') %}
 # {% set build_number = environ.get('GIT_DESCRIBE_NUMBER', '0') %}
-{% set version = "3.0.0" %}
-{% set build_number = 1 %}
+{% set build_number = 2 %}
 
 package:
   name: {{ name|lower }}
@@ -12,14 +11,7 @@ source:
   git_url: {{ environ.get('FEEDSTOCK_ROOT', '..') }}
 
 build:
-  # Uncomment the following line if the package is pure Python and the recipe
-  # is exactly the same for all platforms. It is okay if the dependencies are
-  # not built for all platforms/versions, although selectors are still not allowed.
-  # See https://conda-forge.org/docs/maintainer/knowledge_base.html#noarch-python
-  # for more details.
-  # noarch: python
-
-  skip: true    # [win or osx]
+  skip: true    # [win]
   number: {{ build_number }}
   # string: {{ [build_number, ('h' + PKG_HASH), environ.get('GIT_DESCRIBE_HASH', '')]|join('_') }}
 
@@ -71,7 +63,7 @@ about:
   license: PUBLIC-DOMAIN
   license_family: PUBLIC-DOMAIN
   license_file: LICENSE
-  summary: Shared library to manipulate GRIB2 data files
+  summary: Shared library to manipulate GRIB2 files
 
 # Uncomment the following if this will be on a forge
 # Remove these lines if this is only be used for CI
