@@ -7,8 +7,12 @@ make -f makefile.conda || exit 1
 
 # There is no 'install' target in makefile.
 mkdir -p ${PREFIX}/lib
-cp lib/libwgrib2.a ${PREFIX}/lib
-cp lib/libwgrib2${SHLIB_EXT} ${PREFIX}/lib
+if [ ${SHLIB_EXT} == ".dylib" ]; then
+    cp -a lib/libwgrib2*${SHLIB_EXT} ${PREFIX}/lib
+else
+    cp -a lib/libwgrib2${SHLIB_EXT}* ${PREFIX}/lib
+fi
+
 mkdir -p ${PREFIX}/include/wgrib2
 cp wgrib2/config.h ${PREFIX}/include/wgrib2
 cp wgrib2/ipolates.h ${PREFIX}/include/wgrib2

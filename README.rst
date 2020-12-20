@@ -24,5 +24,7 @@ The easiest way to install *libwgrib2* and its dependencies is via conda::
 
   $ conda install -c yt87 libwgrib2
 
-To build from source, one has to modify the top level makefile. It is
-easier to use the NCEP distibution instead.
+To build from source, the top-level makefile should be modified to eliminate
+static linking of *libpng*, *libjasper* and *libaec* because source for
+those libraries is not included. It is easier to use the NCEP distibution
+instead.

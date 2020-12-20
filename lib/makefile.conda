@@ -17,19 +17,30 @@ libs:=$(libs:libwgrib2.a=)
 libs:=$(libs:.a=.x)
 libsdir:=$(libs:.x=)
 
+major_version:=3
+current_version:=3.0.0
+
 all:	${libs}
 	touch libpng.a ; rm libpng.*
-	$(AR) cr libwgrib2.a */*.o
 ifeq ($(findstring linux,$(notdir $(CC))),linux)
-	${CC} ${CFLAGS} -shared -o libwgrib2.so */*.o ${LDFLAGS} ${LIBS}
+	${CC} -shared -Wl,-soname,libwgrib2.so.${major_version} ${CFLAGS} \
+		-o libwgrib2.so.${current_version} */*.o ${LDFLAGS} ${LIBS}
+	ln -s libwgrib2.so.${current_version} libwgrib2.so.${major_version}
+	ln -s libwgrib2.so.${current_version} libwgrib2.so
 else ifeq ($(findstring darwin,$(notdir $(CC))),darwin)
-	${CC} ${CFLAGS} -dynamiclib -o libwgrib2.dylib */*.o ${LDFLAGS} ${LIBS}
+	${CC} -dynamiclib -install_name libwgrib2.${major_version}.dylib \
+		-compatibility_version ${major_version} \
+		-current_version ${current_version} ${CFLAGS} \
+		-o libwgrib2.${current_version}.dylib */*.o ${LDFLAGS} ${LIBS}
+	ln -s libwgrib2.${current_version}.dylib libwgrib2.${major_version}.dylib
+	ln -s libwgrib2.${current_version}.dylib libwgrib2.dylib
 endif
 	rm */*.o *.x
 	rm -r ${libsdir}
 
 clean:
-	touch junk.x junk.so junk.dynlib junk.mod junk.la junk.a ; rm  *.x *.so *.dynlib *.mod *.la *.a
+	touch junk.x junk.so junk.dynlib junk.mod junk.la junk.a ; \
+        rm  *.x *.so *.dynlib *.mod *.la *.a
 	mkdir -p pkgconfig && rm -r pkgconfig
 	touch libjunk ; rm -r lib*
 
